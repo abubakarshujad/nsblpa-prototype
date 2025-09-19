@@ -1,8 +1,40 @@
- document.addEventListener("DOMContentLoaded", function () {
-      const menuBtn = document.getElementById("menuBtn");
-      const navLinks = document.getElementById("navLinks");
-      const menuClose = document.getElementById("menuClose");
-      const menuOverlay = document.getElementById("menuOverlay");
+document.addEventListener("DOMContentLoaded", function () {
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.getElementById("navLinks");
+    const menuClose = document.getElementById("menuClose");
+    const menuOverlay = document.getElementById("menuOverlay");
+
+    function toggleMenu() {
+      const isExpanded = navLinks.classList.toggle("active");
+      menuOverlay.classList.toggle("active", isExpanded);
+      menuBtn.setAttribute("aria-expanded", isExpanded);
+      document.body.classList.toggle("menu-open", isExpanded);
+
+      const icon = menuBtn.querySelector("i");
+      icon.classList.toggle("fa-bars", !isExpanded);
+      icon.classList.toggle("fa-times", isExpanded);
+    }
+
+    function closeMenu() {
+      navLinks.classList.remove("active");
+      menuOverlay.classList.remove("active");
+      menuBtn.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("menu-open");
+
+      const icon = menuBtn.querySelector("i");
+      icon.classList.add("fa-bars");
+      icon.classList.remove("fa-times");
+    }
+
+    if (menuBtn && navLinks) {
+      menuBtn.addEventListener("click", (e) => { e.stopPropagation(); toggleMenu(); });
+      if (menuClose) menuClose.addEventListener("click", closeMenu);
+      if (menuOverlay) menuOverlay.addEventListener("click", closeMenu);
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 768) closeMenu();
+      });
+    }
 
       // Function to handle smooth scrolling
       function handleSmoothScroll(e) {
@@ -36,85 +68,4 @@
       document.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener("click", handleSmoothScroll);
       });
-
-      // Mobile menu functionality
-      if (menuBtn && navLinks) {
-        // Toggle menu when menu button is clicked
-        menuBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleMenu();
-        });
-
-        // Close menu when close button is clicked
-        if (menuClose) {
-          menuClose.addEventListener("click", () => {
-            closeMenu();
-          });
-        }
-
-        // Close menu when clicking on overlay
-        if (menuOverlay) {
-          menuOverlay.addEventListener("click", () => {
-            closeMenu();
-          });
-        }
-
-        // Handle window resize
-        window.addEventListener("resize", () => {
-          if (window.innerWidth >= 900) {
-            closeMenu();
-          }
-        });
-
-        // Close menu when clicking outside (for touch devices)
-        document.addEventListener("touchstart", (e) => {
-          if (window.innerWidth < 900 &&
-            navLinks.classList.contains("active") &&
-            !navLinks.contains(e.target) &&
-            !menuBtn.contains(e.target)) {
-            closeMenu();
-          }
-        });
-
-        // Close menu when clicking outside (for mouse)
-        document.addEventListener("click", (e) => {
-          if (window.innerWidth < 900 &&
-            navLinks.classList.contains("active") &&
-            !navLinks.contains(e.target) &&
-            !menuBtn.contains(e.target)) {
-            closeMenu();
-          }
-        });
-
-        // Function to toggle menu
-        function toggleMenu() {
-          navLinks.classList.toggle("active");
-          menuOverlay.classList.toggle("active");
-
-          const isExpanded = navLinks.classList.contains("active");
-          menuBtn.setAttribute("aria-expanded", isExpanded);
-
-          const icon = menuBtn.querySelector("i");
-          if (isExpanded) {
-            icon.classList.remove("fa-bars");
-            icon.classList.add("fa-times");
-            document.body.style.overflow = "hidden";
-          } else {
-            icon.classList.remove("fa-times");
-            icon.classList.add("fa-bars");
-            document.body.style.overflow = "";
-          }
-        }
-
-        // Function to close menu
-        function closeMenu() {
-          navLinks.classList.remove("active");
-          menuOverlay.classList.remove("active");
-          menuBtn.setAttribute("aria-expanded", "false");
-          const icon = menuBtn.querySelector("i");
-          icon.classList.remove("fa-times");
-          icon.classList.add("fa-bars");
-          document.body.style.overflow = "";
-        }
-      }
-    });
+  });
